@@ -2,12 +2,11 @@
   description = "Application packaged using poetry2nix";
 
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     poetry2nix = {
       url = "github:nix-community/poetry2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-utils.follows = "poetry2nix/flake-utils";
+    nixpkgs.follows = "poetry2nix/nixpkgs";
   };
 
   outputs = { self, nixpkgs, flake-utils, poetry2nix }:
