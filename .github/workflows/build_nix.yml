@@ -7,17 +7,13 @@ jobs:
   build:
     strategy:
       matrix:
-        pyVersion:
-          # - "39"
-          - "310"
-          # - "311"
-          # - "312"
-          # - "313"
         include:
           - system: x86_64-linux
             os: ubuntu-latest
+            pyVersion: "310"
           - system: x86_64-darwin
             os: macos-latest
+            pyVersion: "310"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
