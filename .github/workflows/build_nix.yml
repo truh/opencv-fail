@@ -6,14 +6,27 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
+          - system: x86_64-linux
+            os: ubuntu-latest
+            pyVersion: "39"
+          - system: x86_64-darwin
+            os: macos-latest
+            pyVersion: "39"
           - system: x86_64-linux
             os: ubuntu-latest
             pyVersion: "310"
           - system: x86_64-darwin
             os: macos-latest
             pyVersion: "310"
+          - system: x86_64-linux
+            os: ubuntu-latest
+            pyVersion: "311"
+          - system: x86_64-darwin
+            os: macos-latest
+            pyVersion: "311"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
