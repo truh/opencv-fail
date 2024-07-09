@@ -9,35 +9,48 @@
     nixpkgs.follows = "poetry2nix/nixpkgs";
   };
 
-  outputs = { self, nixpkgs, flake-utils, poetry2nix }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        # see https://github.com/nix-community/poetry2nix/tree/master#api for more functions and examples.
-        pkgs = nixpkgs.legacyPackages.${system};
-        inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
-      in
-      {
-        packages = {
-          myapp = mkPoetryApplication { projectDir = self; };
-          default = self.packages.${system}.myapp;
-        };
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    poetry2nix,
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
+      # see https://github.com/nix-community/poetry2nix/tree/master#api for more functions and examples.
+      pkgs = nixpkgs.legacyPackages.${system};
+      inherit (poetry2nix.lib.mkPoetry2Nix {inherit pkgs;}) mkPoetryApplication;
+      allPythonVersions = ["39" "310" "311" "312" "313"];
+    in {
+      packages = builtins.listToAttrs (
+        builtins.map (
+          pyVersion: {
+            value = mkPoetryApplication {
+              projectDir = self;
+              python = pkgs."python${pyVersion}";
+            };
+            name = "myapp-${pyVersion}";
+          }
+        ) allPythonVersions
+      );
 
-        # Shell for app dependencies.
-        #
-        #     nix develop
-        #
-        # Use this shell for developing your app.
-        devShells.default = pkgs.mkShell {
-          inputsFrom = [ self.packages.${system}.myapp ];
-        };
+      formatter = pkgs.alejandra;
 
-        # Shell for poetry.
-        #
-        #     nix develop .#poetry
-        #
-        # Use this shell for changes to pyproject.toml and poetry.lock.
-        devShells.poetry = pkgs.mkShell {
-          packages = [ pkgs.poetry ];
-        };
-      });
+      # Shell for app dependencies.
+      #
+      #     nix develop
+      #
+      # Use this shell for developing your app.
+      devShells.default = pkgs.mkShell {
+        inputsFrom = [self.packages.${system}.myapp];
+      };
+
+      # Shell for poetry.
+      #
+      #     nix develop .#poetry
+      #
+      # Use this shell for changes to pyproject.toml and poetry.lock.
+      devShells.poetry = pkgs.mkShell {
+        packages = [pkgs.poetry];
+      };
+    });
 }
