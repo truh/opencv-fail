@@ -7,7 +7,12 @@ jobs:
   build:
     strategy:
       matrix:
-        pyVersion: ["39", "310", "311", "312", "313"]
+        pyVersion:
+          # - "39"
+          - "310"
+          # - "311"
+          # - "312"
+          # - "313"
         include:
           - system: x86_64-linux
             os: ubuntu-latest
