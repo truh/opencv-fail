@@ -43,4 +43,4 @@ jobs:
         if: ${{ contains(matrix.system, 'x86_64-darwin') }}
         run: sudo softwareupdate --install-rosetta --agree-to-license
       - name: Building package
-        run: nix build ".#packages.${{ matrix.system }}.myapp-${{ matrix.pyVersion }}"
+        run: nix build --print-build-logs ".#packages.${{ matrix.system }}.myapp-${{ matrix.pyVersion }}"
